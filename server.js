@@ -1,8 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const db = require('./config/db');
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
+app.use(express.json());
 
 app.get('/',(req, res)=>{
     res.send('hellow world');
@@ -17,6 +19,8 @@ app.get('/db-test',(req,res)=>{
         res.json({ dbResult:results[0].result})
     })
 })
+
+app.use('/api/tasks', taskRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
