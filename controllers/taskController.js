@@ -28,3 +28,17 @@ exports.updateTask =(req, res) =>
         res.status(200).json({message:'Task Updated', updatedId: id })
     })
 }
+
+//Delete
+exports.deleteTask =(req, res)=>{
+    const {id} = req.params;
+
+    const sql = 'DELETE FROM tasks WHERE id = ?';
+
+    db.query(sql, [id],( err, result)=>{
+        if(err) return res.status(500).json({error:err.message});
+
+         if(result.affectedRows === 0) return res.status(404).json({error:'Task not found'});
+        res.json({message:'Task Deleted',deleteId:id});
+    });
+}
