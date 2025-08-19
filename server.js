@@ -3,6 +3,7 @@ const express = require("express");
 const db = require("./config/db");
 const taskRoutes = require("./routes/taskRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const  authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ app.get("/db-test", (req, res) => {
   });
 });
 
+app.use('/api/auth', authRoutes);
 app.use("/api/tasks", taskRoutes);
 
 app.use(notFound);

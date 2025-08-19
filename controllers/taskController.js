@@ -1,74 +1,89 @@
 const db = require("../config/db");
 const { successResponse, errorResponse } = require("../utils/responseHandler");
 
-//Create
-exports.createTask = (req, res) => {
+// Create
+exports.createTask = async (req, res) => {
   const { title, description } = req.body;
+  const sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
 
-  const sql = "INSERT INTO tasks (title, description) VALUES (?,?)";
-  db.query(sql, [title, description || null], (err, result) => {
-    if (err) return errorResponse(res, err.message, 500);
-    return successResponse(
-      res,
-      "Task created successfully",
-      { taskId: result.insertId },
-      201
-    );
-  });
+  try {
+    const [result] = await db.query(sql, [title, description || null]);
+
+    return successResponse(res, 201, "Task created successfully", {
+      taskId: result.insertId,
+    });
+  } catch (err) {
+    return errorResponse(res, 500, err.message);
+  }
 };
 
-//Update
-exports.updateTask = (req, res) => {
+// Update
+exports.updateTask = async (req, res) => {
   const { id } = req.params;
-  const sql =
-    "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?";
   const { title, description, status } = req.body;
 
-  db.query(sql, [title, description, status, id], (err, result) => {
-    if (err) return errorResponse(res, err.message, 500);
-    if (result.affectedRows === 0)
-      return errorResponse(res, "Task not found", 404);
+  const sql =
+    "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?";
 
-    return successResponse(res, "Task updated successfully");
-  });
+  try {
+    const [result] = await db.query(sql, [title, description, status, id]);
+
+    if (result.affectedRows === 0)
+      return errorResponse(res, 404, "Task not found");
+
+    return successResponse(res, 200, "Task updated successfully");
+  } catch (err) {
+    return errorResponse(res, 500, err.message);
+  }
 };
 
-//Delete
-exports.deleteTask = (req, res) => {
+// Delete
+exports.deleteTask = async (req, res) => {
   const { id } = req.params;
-
   const sql = "DELETE FROM tasks WHERE id = ?";
 
-  db.query(sql, [id], (err, result) => {
-    if (err) return errorResponse(res, err.message, 500);
+  try {
+    const [result] = await db.query(sql, [id]);
 
     if (result.affectedRows === 0)
-      return errorResponse(res, "Task not found", 404);
-    return successResponse(res, "Task deleted successfully");
-  });
+      return errorResponse(res, 404, "Task not found");
+
+    return successResponse(res, 200, "Task deleted successfully");
+  } catch (err) {
+    return errorResponse(res, 500, err.message);
+  }
 };
 
-//Select
-exports.getAllTasks = (req, res) => {
+// Get All
+exports.getAllTasks = async (req, res) => {
   const sql = "SELECT * FROM tasks ORDER BY created_at DESC";
-  db.query(sql, (err, results) => {
-    if (err) return errorResponse(res, err.message, 500);
-    return successResponse(res, "Tasks fetched successfully", {
+
+  try {
+    const [results] = await db.query(sql);
+
+    return successResponse(res, 200, "Tasks fetched successfully", {
       tasks: results,
     });
-  });
+  } catch (err) {
+    return errorResponse(res, 500, err.message);
+  }
 };
 
-//Select by ID
-exports.getTaskById = (req, res) => {
+// Get by ID
+exports.getTaskById = async (req, res) => {
   const { id } = req.params;
-
   const sql = "SELECT * FROM tasks WHERE id = ?";
-  db.query(sql, [id], (err, results) => {
-    if (err) return errorResponse(res, err.message, 500);
 
-    if (results.length === 0) return errorResponse(res, "Task not found", 404);
+  try {
+    const [results] = await db.query(sql, [id]);
 
-    return successResponse(res, "Task fetch successfully", { task: result[0] });
-  });
+    if (results.length === 0)
+      return errorResponse(res, 404, "Task not found");
+
+    return successResponse(res, 200, "Task fetched successfully", {
+      task: results[0],
+    });
+  } catch (err) {
+    return errorResponse(res, 500, err.message);
+  }
 };

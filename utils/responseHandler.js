@@ -1,7 +1,7 @@
-exports.successResponse = (res, message, data = {}, status = 200) => {
-    res.status(status).json({ success: true, message, ...data });
+exports.successResponse = (res, status = 200, message, data = {}) => {
+  res.status(status).json({ success: true, message, data });
 };
 
-exports.errorResponse = (res, message, status = 400) => {
-    res.status(status).json({ success: false, error: message });
+exports.errorResponse = (res, status = 400, message) => {
+  res.status(status).json({ success: false, error: message });
 };
