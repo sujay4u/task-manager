@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import Login from './pages/Login';
 import Register from "./pages/Register";
+import Home from "./pages/Home";
 
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
-        {/* <Route path="/login" element={<Login/>} /> */}
+        <Route path="/" element={<Home/>} />
       </Routes>
     </Router>
    </AuthProvider>
