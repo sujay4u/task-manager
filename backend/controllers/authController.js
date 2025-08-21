@@ -18,13 +18,32 @@ exports.register = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db.query("Insert into users (name, email, password) VALUES (?,?,?)", [
+    const [result] = await db.query("Insert into users (name, email, password) VALUES (?,?,?)", [
       name,
       email,
       hashedPassword,
     ]);
 
-    return successResponse(res, 201, "User registered successfully");
+    const newUser = {
+      id: result.insertId,
+      name,
+      email,
+    };
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email, name: newUser.name },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return successResponse(res, 201, "User registered successfully", {
+      token,
+      user: newUser,
+    });
   } catch (error) {
     next(error);
   }
@@ -65,10 +84,10 @@ exports.login = async (req, res, next) => {
       }
     );
 
-    return successResponse(res,200,"Login successful",{
+    return successResponse(res, 200, "Login successful", {
       token,
-      user:{
-         id: user.id,
+      user: {
+        id: user.id,
         email: user.email,
         name: user.name,
       },

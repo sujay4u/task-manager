@@ -4,8 +4,14 @@ const db = require("./config/db");
 const taskRoutes = require("./routes/taskRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const  authRoutes = require('./routes/authRoutes');
+const cors = require("cors");
+
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {
