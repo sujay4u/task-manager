@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Optional global styles */
+body {
+  font-family: system-ui, sans-serif;
+  background-color: #f9fafb; /* light gray background */
+  min-height: 100vh;
+  margin: 0;
+}
