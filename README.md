@@ -1,1 +1,1 @@
-My React + Node JS project
+backend folder contains backend code, frontend folder contains React app.
