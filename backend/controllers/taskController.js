@@ -4,42 +4,68 @@ const { successResponse, errorResponse } = require("../utils/responseHandler");
 // Create
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
+  const userId = req.user.id; // from auth middleware
 
-  const userId = req.user.id; //from auth middleware
-
-  const sql = "INSERT INTO tasks (title, description, user_id) VALUES (?, ?,?)";
+  const sql = "INSERT INTO tasks (title, description, user_id) VALUES (?, ?, ?)";
 
   try {
     const [result] = await db.query(sql, [title, description || null, userId]);
 
+    const [newTaskRows] = await db.query(
+      "SELECT * FROM tasks WHERE id = ? AND user_id = ?",
+      [result.insertId, userId]
+    );
+
     return successResponse(res, 201, "Task created successfully", {
-      taskId: result.insertId,
+      task: newTaskRows[0],
     });
   } catch (err) {
     return errorResponse(res, 500, err.message);
   }
 };
 
+
 // Update
 exports.updateTask = async (req, res) => {
   const { id } = req.params;
   const { title, description, status } = req.body;
- const userId = req.user.id;
-
-  const sql =
-    "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ? AND user_id = ?";
+  const userId = req.user.id;
 
   try {
-    const [result] = await db.query(sql, [title, description, status, id,userId]);
+    const [rows] = await db.query(
+      "SELECT * FROM tasks WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
 
-    if (result.affectedRows === 0)
+    if (rows.length === 0) {
       return errorResponse(res, 404, "Task not found");
+    }
 
-    return successResponse(res, 200, "Task updated successfully");
+    const existing = rows[0];
+
+    const updatedTitle = title ?? existing.title;
+    const updatedDescription = description ?? existing.description;
+    const updatedStatus = status ?? existing.status;
+
+    await db.query(
+      "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ? AND user_id = ?",
+      [updatedTitle, updatedDescription, updatedStatus, id, userId]
+    );
+
+    // fetch updated row
+    const [updatedRows] = await db.query(
+      "SELECT * FROM tasks WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
+
+    return successResponse(res, 200, "Task updated successfully", {
+      task: updatedRows[0],
+    });
   } catch (err) {
     return errorResponse(res, 500, err.message);
   }
 };
+
 
 // Delete
 exports.deleteTask = async (req, res) => {
