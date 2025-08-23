@@ -90,7 +90,7 @@ exports.deleteTask = async (req, res) => {
 exports.getAllTasks = async (req, res) => {
     const userId = req.user.id;
 
-      const { page = 1, limit = 10, status } = req.query;
+      const { page = 1, limit = 10, status, search } = req.query;
 
     const offset = (page - 1) * limit;
   try {
@@ -102,6 +102,12 @@ let params = [userId]
       sql += " AND status = ?";
       params.push(status);
     }
+
+    if (search) {
+  sql += " AND (title LIKE ? OR description LIKE ?)";
+  params.push(`%${search}%`, `%${search}%`);
+}
+
     sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
     params.push(parseInt(limit), parseInt(offset));
 
@@ -113,6 +119,10 @@ let params = [userId]
       countSql += " AND status = ?";
       countParams.push(status);
     }
+
+    if (search) countSql += " AND (title LIKE ? OR description LIKE ?)", countParams.push(`%${search}%`, `%${search}%`);
+
+
     const [[{ total }]] = await db.query(countSql, countParams);
 
 

@@ -78,8 +78,8 @@ export default function TaskList() {
     const updatedTask = await updateTask(
       id,
       { 
-        title: task.title,           // include title
-        description: task.description, // include description
+        title: task.title,           
+        description: task.description,
         status: newStatus 
       },
       token
@@ -168,7 +168,7 @@ export default function TaskList() {
               key={task.id}
               className="flex justify-between items-center p-3 bg-gray-100 rounded"
             >
-              {/* Task Title / Edit Input */}
+              {/* Task Title Input */}
               {editId === task.id ? (
                 <input
                   type="text"
@@ -180,7 +180,7 @@ export default function TaskList() {
                 <span
                   onClick={() => toggleTask(task.id)}
                   className={`cursor-pointer ${
-                    task.status === "done" ? "line-through text-gray-500" : ""
+                    task.status === "completed" ? "line-through text-gray-500" : ""
                   }`}
                 >
                   {task.title}
