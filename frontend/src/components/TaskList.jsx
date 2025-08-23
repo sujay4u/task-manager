@@ -15,20 +15,26 @@ export default function TaskList() {
   const { token } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
 const [filterStatus, setFilterStatus] = useState("");
+const [sortBy, setSortBy] = useState("created_at");
+const [sortOrder, setSortOrder] = useState("desc");
 
-  // Fetch tasks
-  useEffect(() => {
-    const fetchAllTasks = async () => {
+
+ const fetchAllTasks = async () => {
       try {
         const data = await getTasks(token,{
           status:filterStatus,
-          search:searchTerm
+          search:searchTerm,
+          sortBy,
+          sortOrder,
         });
         setTasks(data);
       } catch (error) {
         console.error(error.message);
       }
     };
+
+  // Fetch tasks
+  useEffect(() => {
     fetchAllTasks();
   }, [token]);
 
@@ -180,11 +186,32 @@ const [filterStatus, setFilterStatus] = useState("");
     <option value="completed">Completed</option>
   </select>
   <button
-    onClick={fetchTasks} // reuse your task fetch function
+    onClick={fetchAllTasks} // reuse your task fetch function
     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
   >
     Apply
   </button>
+  <select
+  value={sortBy}
+  onChange={(e) => setSortBy(e.target.value)}
+  className="border rounded px-2 py-2"
+>
+  <option value="created_at">Date</option>
+  <option value="title">Title</option>
+  <option value="status">Status</option>
+</select>
+
+<select
+  value={sortOrder}
+  onChange={(e) => setSortOrder(e.target.value)}
+  className="border rounded px-2 py-2"
+>
+  <option value="asc">Ascending</option>
+  <option value="desc">Descending</option>
+</select>
+
+<button onClick={fetchAllTasks}>Apply</button>
+
 </div>
 
       {/* Task List */}

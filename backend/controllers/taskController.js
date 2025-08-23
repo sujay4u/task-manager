@@ -90,8 +90,10 @@ exports.deleteTask = async (req, res) => {
 exports.getAllTasks = async (req, res) => {
     const userId = req.user.id;
 
-      const { page = 1, limit = 10, status, search } = req.query;
+      const { page = 1, limit = 10, status, search, sortBy = "created_at", sortOrder = "desc" } = req.query;
 
+        const allowedSort = ["title", "status", "created_at"];
+  const safeSortBy = allowedSort.includes(sortBy) ? sortBy : "created_at";
     const offset = (page - 1) * limit;
   try {
 
@@ -108,7 +110,7 @@ let params = [userId]
   params.push(`%${search}%`, `%${search}%`);
 }
 
-    sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+sql += ` ORDER BY ${safeSortBy} ${sortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
     params.push(parseInt(limit), parseInt(offset));
 
   const [results] = await db.query(sql,params);

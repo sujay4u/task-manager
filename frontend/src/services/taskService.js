@@ -7,11 +7,17 @@ const api = axios.create({
 });
 
 // Get all tasks
-export async function getTasks(token, param ={}) {
+export async function getTasks(token, { status = "", search = "", sortBy ="created_at", sortOrder ="desc" } = {}) {
   try {
-    const query = new URLSearchParams(params).toString();
-    const res = await api.get(`/tasks?${query}`, {
+     const params = {};
+    if (status) params.status = status;
+    if (search) params.search = search;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    
+    const res = await api.get(`/tasks`, {
       headers: { Authorization: `Bearer ${token}` },
+      params,
     });
     return res.data.data.tasks; 
   } catch (error) {
