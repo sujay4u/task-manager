@@ -7,19 +7,34 @@ const api = axios.create({
 });
 
 // Get all tasks
-export async function getTasks(token, { status = "", search = "", sortBy ="created_at", sortOrder ="desc" } = {}) {
+export async function getTasks(
+  token,
+  {
+    status = "",
+    search = "",
+    sortBy = "created_at",
+    sortOrder = "desc",
+    page = 1,
+    limit = 5,
+  } = {}
+) {
   try {
-     const params = {};
+    const params = {};
     if (status) params.status = status;
     if (search) params.search = search;
     if (sortBy) params.sortBy = sortBy;
     if (sortOrder) params.sortOrder = sortOrder;
-    
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
     const res = await api.get(`/tasks`, {
       headers: { Authorization: `Bearer ${token}` },
       params,
     });
-    return res.data.data.tasks; 
+    return {
+      tasks: res.data.data.tasks,
+      pagination: res.data.data.pagination,
+    };
   } catch (error) {
     throw new Error(error.response?.data?.error || "Failed to fetch tasks");
   }
@@ -43,7 +58,7 @@ export async function updateTask(id, updatedTask, token) {
     const res = await api.put(`/tasks/${id}`, updatedTask, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.data.data.task; 
+    return res.data.data.task;
   } catch (error) {
     throw new Error(error.response?.data?.error || "Failed to update task");
   }

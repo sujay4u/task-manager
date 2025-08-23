@@ -1,6 +1,5 @@
 const { stack } = require("../routes/taskRoutes");
 
-//404 handler
 const notFound = (req, res, next) => {
   const error = new Error(`Route not found - ${req.originalUrl}`);
   error.statusCode = 404;

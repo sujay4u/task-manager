@@ -4,7 +4,7 @@ const { successResponse, errorResponse } = require("../utils/responseHandler");
 // Create
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
-  const userId = req.user.id; // from auth middleware
+  const userId = req.user.id;
 
   const sql = "INSERT INTO tasks (title, description, user_id) VALUES (?, ?, ?)";
 

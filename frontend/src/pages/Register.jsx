@@ -4,26 +4,25 @@ import { AuthContext, AuthProvider } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function register() {
-    
-    const {login} = useContext(AuthContext);
-    const navigate = useNavigate();
-    
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async(e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-        const {token, user} = await registerUser({name, email, password});
-        login(user, token);
-        navigate("/");
+      const { token, user } = await registerUser({ name, email, password });
+      login(user, token);
+      navigate("/");
     } catch (error) {
-        setError(error.message);
+      setError(error.message);
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded shadow">
@@ -62,5 +61,4 @@ export default function register() {
       </form>
     </div>
   );
-
 }
