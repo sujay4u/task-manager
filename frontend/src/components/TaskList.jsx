@@ -13,12 +13,17 @@ export default function TaskList() {
   const [editId, setEditId] = useState(null); 
   const [editTitle, setEditTitle] = useState("");
   const { token } = useContext(AuthContext);
+  const [searchTerm, setSearchTerm] = useState("");
+const [filterStatus, setFilterStatus] = useState("");
 
   // Fetch tasks
   useEffect(() => {
     const fetchAllTasks = async () => {
       try {
-        const data = await getTasks(token);
+        const data = await getTasks(token,{
+          status:filterStatus,
+          search:searchTerm
+        });
         setTasks(data);
       } catch (error) {
         console.error(error.message);
@@ -157,6 +162,30 @@ export default function TaskList() {
           Add
         </button>
       </form>
+<div className="flex gap-2 mb-4">
+  <input
+    type="text"
+    placeholder="Search tasks..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="flex-1 border rounded px-3 py-2"
+  />
+  <select
+    value={filterStatus}
+    onChange={(e) => setFilterStatus(e.target.value)}
+    className="border rounded px-2 py-2"
+  >
+    <option value="">All</option>
+    <option value="pending">Pending</option>
+    <option value="completed">Completed</option>
+  </select>
+  <button
+    onClick={fetchTasks} // reuse your task fetch function
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+  >
+    Apply
+  </button>
+</div>
 
       {/* Task List */}
       {tasks.length === 0 ? (

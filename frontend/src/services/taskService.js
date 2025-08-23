@@ -7,9 +7,10 @@ const api = axios.create({
 });
 
 // Get all tasks
-export async function getTasks(token) {
+export async function getTasks(token, param ={}) {
   try {
-    const res = await api.get("/tasks", {
+    const query = new URLSearchParams(params).toString();
+    const res = await api.get(`/tasks?${query}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.data.data.tasks; 
