@@ -7,9 +7,10 @@ const  authRoutes = require('./routes/authRoutes');
 const cors = require("cors");
 
 
+
 const app = express();
 app.use(cors({
-  origin: "https://task-manager-d7xk8gvh7-sujays-projects-5ccbf022.vercel.app",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 app.use(express.json());
