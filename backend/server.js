@@ -9,7 +9,7 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://task-manager-d7xk8gvh7-sujays-projects-5ccbf022.vercel.app",
   credentials: true
 }));
 app.use(express.json());
